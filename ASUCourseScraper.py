@@ -45,7 +45,6 @@ def GetProfessorData(professor):
     response = JSONdata["response"]
     return response
 
-
 #Iterates through the list of professors gathered from the ASU course catalog
 def GetRMPData():
     print("GetRMPData()")
