@@ -31,7 +31,6 @@ def CreateTeacherList():
     print(ProfessorsTeachingThisClass)
     return ProfessorsTeachingThisClass
 
-
 #Use this function to get RMP teacher ids for a given professor name. This is necessary to find their actual RMP page.
 def GetProfessorData(professor):
     #This URL is a JSON page for RMP teacher data
