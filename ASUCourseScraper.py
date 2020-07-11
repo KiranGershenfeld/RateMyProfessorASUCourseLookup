@@ -11,13 +11,11 @@ text_file = open("Output.txt", "w")
 text_file.write("The Following Data was collected from RateMyProfessor.com as well as the ASU Course Catalog using the Department and Class Number that you entered.")
 
 def CreateTeacherList():
-    print("Getting teacher list")
     ProfessorsTeachingThisClass = []
-    #Prompt User for Department and Class
-    userDepartment = input("Department (3 Letters): ")
-    userClassNumber = input("Class Number (3 Numbers): ")
-    #Query ASU Course Catalog for Teachers teaching this class
-    url = "https://webapp4.asu.edu/catalog/myclasslistresults?t=2207&s=" + userDepartment + "&n=" + userClassNumber + "&hon=F&promod=F&e=open&page=1&col=D&ord=desc"
+    #Asks user for the url of the ASU Course Catalouge page that they want queried
+    print("Enter url of ASU Course Search Catalouge page you want queried")
+    userUrl = input()
+    url = userUrl.replace("classlist", "myclasslistresults")
     html = requests.get(url)
     soup = BeautifulSoup(html.content, "lxml")
 
@@ -46,7 +44,6 @@ def GetProfessorData(professor):
 
 #Iterates through the list of professors gathered from the ASU course catalog
 def GetRMPData():
-    print("GetRMPData()")
     ProfessorsTeachingThisClass = CreateTeacherList()
     for professor in ProfessorsTeachingThisClass:
         response = GetProfessorData(professor)
