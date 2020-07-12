@@ -36,6 +36,7 @@ def GetProfessorData(professor):
     JSONdata = json.loads(trimmedJSON)
     #This JSON data contains the number of teachers for that name and their IDs. these will be used in GetRMPData()
     response = JSONdata["response"]
+    print("GetProfessorData done")
     return response
 
 #Iterates through the list of professors gathered from the ASU course catalog
@@ -56,8 +57,9 @@ def GetRMPData(inputURL):
                 condensedProfData["name"] = profName
                 #Ask Ratemyprofessor for data for this teacher using their ID
                 actualRMPURL = requests.get("https://www.ratemyprofessors.com/ShowRatings.jsp?tid=" + str(profID) + "&showMyProfs=true")
-                RMPSoup = BeautifulSoup(actualRMPURL.content, "lxml")
-
+                print("RMPSoup Started")
+                RMPSoup = BeautifulSoup(actualRMPURL.content.decode('utf-8', 'ignore'), "lxml")
+                print("RMPSoup Done")
                 RMPURL = "https://www.ratemyprofessors.com/ShowRatings.jsp?tid=" + str(profID) + "&showMyProfs=true"
                 condensedProfData["RateMyProfessorURL"] = RMPURL
 
@@ -70,7 +72,6 @@ def GetRMPData(inputURL):
                     condensedProfData[description[descriptionNumber]] = grade.text.strip()
                     descriptionNumber+=1
                 RMPData[profName] = condensedProfData
-                print(RMPData)
             else:
                 TeachersWithNoReviews.append(professor)
         else:
@@ -78,7 +79,8 @@ def GetRMPData(inputURL):
 
     profData["NoReviews"] = TeachersWithNoReviews
     profData["NoEntries"] = TeachersWithoutEntries
-
+    print("GetRMPData done")
+    return RMPData
 
 #Run Project
-GetRMPData("https://webapp4.asu.edu/catalog/classlist?t=2207&s=CSE&n=110&hon=F&promod=F&e=open&page=1")
+#GetRMPData("https://webapp4.asu.edu/catalog/classlist?t=2207&s=CSE&n=110&hon=F&promod=F&e=open&page=1")

@@ -10,17 +10,21 @@
     <input id="inputText" type="text" name="" value=""><br>
     <button type="button" name="button" onclick="queryURL()">Submit</button>
 
-
+    <span id="result"></span>
   </body>
   <script type="text/javascript">
     function queryURL(){
       var inputText = $("#inputText").val();
       console.log(inputText);
       $.getJSON('/backgroundRMPASU', {
-        url: inputURL,
+        url: inputText,
       }, function(data) {
-        console.log(data.result)
-        $("#result").html(output);
+        console.log(data)
+        var jsonStr = JSON.stringify(data)
+        var json = $.parseJSON(data)
+        console.log(json)
+
+        $("#result").html(data);
       });
 
     }
