@@ -6,10 +6,9 @@
     <link rel="stylesheet" href="/static/style.css">
   </head>
   <body>
-    <span>Enter the URL for the ASU Course Catalog page you want queried</span><br>
+    <h1>Enter the URL for the ASU Course Catalog page you want queried</h1>
     <input id="inputText" type="text" name="" value=""><br>
-    <button type="button" name="button" onclick="queryURL()">Submit</button>
-
+    <button class="submitButton" type="button" name="button" onclick="queryURL()">Submit</button>
     <span id="result"></span>
   </body>
   <script type="text/javascript">
@@ -19,12 +18,22 @@
       $.getJSON('/backgroundRMPASU', {
         url: inputText,
       }, function(data) {
+        data = data.replace(/'/g, '"')
         console.log(data)
-        var jsonStr = JSON.stringify(data)
         var json = $.parseJSON(data)
-        console.log(json)
-
-        $("#result").html(data);
+        for(x in json){
+          var liString = `
+          <div class="profEntry">
+            <span class="profName">${json[x]["name"]}</span>
+            <ul>
+              <li>Quality: ${json[x]["Overall Quality"]}</li>
+              <li>Would Take Again: ${json[x]["Would Take Again"]}</li>
+              <li>Difficulty: ${json[x]["Difficulty"]}</li>
+              <li><a href="${json[x]["RateMyProfessorURL"]}">Rate My Professor Page</a></li>
+            </ul>
+          </div>`;
+          $("body").append(liString)
+        }
       });
 
     }
