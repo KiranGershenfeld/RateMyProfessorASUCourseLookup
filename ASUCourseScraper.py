@@ -1,7 +1,6 @@
 from bs4 import BeautifulSoup
 import requests
 import json
-import os
 import lxml
 
 #Initialization Information
@@ -33,7 +32,6 @@ def GetProfessorData(professor):
     QueryURL = "https://solr-aws-elb-production.ratemyprofessors.com//solr/rmp/select/?solrformat=true&rows=20&wt=json&json.wrf=noCB&callback=noCB&q=" + professor + "+AND+schoolid_s%3A45&defType=edismax&qf=teacherfirstname_t%5E2000+teacherlastname_t%5E2000+teacherfullname_t%5E2000+autosuggest&bf=pow(total_number_of_ratings_i%2C2.1)&sort=total_number_of_ratings_i+desc&siteName=rmp&rows=20&start=0&fl=pk_id+teacherfirstname_t+teacherlastname_t+total_number_of_ratings_i+averageratingscore_rf+schoolid_s&fq="
     wrappedPage = requests.get(QueryURL)
     wrappedJSON = BeautifulSoup(wrappedPage.content, "lxml").find("p").text.strip()
-    print(wrappedJSON)
     trimmedJSON = wrappedJSON[5:-1]
     JSONdata = json.loads(trimmedJSON)
     #This JSON data contains the number of teachers for that name and their IDs. these will be used in GetRMPData()
@@ -43,45 +41,44 @@ def GetProfessorData(professor):
 #Iterates through the list of professors gathered from the ASU course catalog
 def GetRMPData(inputURL):
     ProfessorsTeachingThisClass = CreateTeacherList(inputURL)
+    RMPData = {} #This will be the JSON returned to the webpage
+
     for professor in ProfessorsTeachingThisClass:
         response = GetProfessorData(professor)
         #Conditions for whether professor was found and has reviews
         if response["numFound"] > 0:
             profData = response["docs"][0]
             if profData["total_number_of_ratings_i"] > 0:
+                condensedProfData = {}
                 #Gathering name and id of professor
                 profID = profData["pk_id"]
                 profName = profData["teacherfirstname_t"] + " " + profData["teacherlastname_t"]
+                condensedProfData["name"] = profName
                 #Ask Ratemyprofessor for data for this teacher using their ID
                 actualRMPURL = requests.get("https://www.ratemyprofessors.com/ShowRatings.jsp?tid=" + str(profID) + "&showMyProfs=true")
                 RMPSoup = BeautifulSoup(actualRMPURL.content, "lxml")
 
-                text_file.write("\n\n" + profName +"\n")
-                text_file.write("https://www.ratemyprofessors.com/ShowRatings.jsp?tid=" + str(profID) + "&showMyProfs=true\n")
-                text_file.write("Overall Quality: " + RMPSoup.find("div", {"class":"RatingValue__Numerator-qw8sqy-2 gxuTRq"}).text.strip() + "\n")
+                RMPURL = "https://www.ratemyprofessors.com/ShowRatings.jsp?tid=" + str(profID) + "&showMyProfs=true"
+                condensedProfData["RateMyProfessorURL"] = RMPURL
+
+                overallQuality = RMPSoup.find("div", {"class":"RatingValue__Numerator-qw8sqy-2 gxuTRq"}).text.strip()
+                condensedProfData["Overall Quality"] = overallQuality
+
                 description = ["Would Take Again", "Difficulty"]
                 descriptionNumber = 0
                 for grade in RMPSoup.findAll("div", {"class":"FeedbackItem__FeedbackNumber-uof32n-1 bGrrmf"}):
-                    print(description[descriptionNumber] + ": " + grade.text.strip())
-                    text_file.write(description[descriptionNumber] + ": " + grade.text.strip() + "\n")
+                    condensedProfData[description[descriptionNumber]] = grade.text.strip()
                     descriptionNumber+=1
+                RMPData[profName] = condensedProfData
+                print(RMPData)
             else:
                 TeachersWithNoReviews.append(professor)
         else:
             TeachersWithoutEntries.append(professor)
-    print("")
-    text_file.write("\n\nThe Following Teachers Had 0 Reviews\n")
-    for teacher in TeachersWithNoReviews:
-        print(teacher)
-        text_file.write(teacher + "\n")
-    print("")
-    text_file.write("\nThe Following Teachers Couldnt Be Found\n")
-    for teacher in TeachersWithoutEntries:
-        print(teacher)
-        text_file.write(teacher + "\n")
 
-    text_file.close()
-    os.startfile("Output.txt")
+    profData["NoReviews"] = TeachersWithNoReviews
+    profData["NoEntries"] = TeachersWithoutEntries
+
 
 #Run Project
 GetRMPData("https://webapp4.asu.edu/catalog/classlist?t=2207&s=CSE&n=110&hon=F&promod=F&e=open&page=1")
