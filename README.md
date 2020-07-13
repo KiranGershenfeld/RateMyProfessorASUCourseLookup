@@ -1,10 +1,8 @@
 # RMPASU
-Gets RateMyProfessor entries for all professors teaching a class at ASU
+Visit rmp-asu.herokuapp.com to use RMPASU
+Paste a link directly from the ASU Course Search website and the website will display RateMyProfessor information for each teacher listed on the linked url.
 
-Steps:
-1. Run the script from terminal
-2. Enter 3 letter department code
-3. Enter 3 digit class code
-4. View output file called "Output.txt"
+This app is written in python, the web implementation uses Flask, and the site is hosted through Heroku.
 
-Works by scraping the data from ASU Course search and RateMyProfessors JSON api.
+#How It Works
+The python script uses the BeautifulSoup module to parse through the HTML of the linked ASU Course Search page. After pulling each teacher name listed, that name is then queried to RateMyProfessor using a behind the scenes JSON page. If a matching teacher is found, the script pulls that teacher ID from the JSON and uses that id to find their actual public facing RateMyProfessor page. Then the html is parsed to find the numeric rating values which are packaged up in JSON and sent back to the webpage. The webpage uses JavaScript to do some light processing and then displays the data.
