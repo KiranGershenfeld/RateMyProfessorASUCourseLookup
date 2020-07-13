@@ -10,7 +10,8 @@ app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'XYZ')
 #Main page redirects to portfolio
 @app.route('/')
 def start():
-    return render_template("index.html")
+#    return render_template("index.html")
+    return "hello world"
 
 @app.route('/backgroundRMPASU')
 def queryRMP():
