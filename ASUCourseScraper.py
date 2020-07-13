@@ -6,8 +6,6 @@ import lxml
 #Initialization Information
 TeachersWithoutEntries = []
 TeachersWithNoReviews = []
-text_file = open("Output.txt", "w")
-text_file.write("The Following Data was collected from RateMyProfessor.com as well as the ASU Course Catalog using the Department and Class Number that you entered.")
 
 def CreateTeacherList(inputURL):
     ProfessorsTeachingThisClass = []
