@@ -1,4 +1,4 @@
-# RMPASU
+# RMPASU  
 Visit https://rmp-asu.herokuapp.com/
 Paste a link directly from the ASU Course Search website and the website will display RateMyProfessor information for each teacher listed on the linked url.
 
