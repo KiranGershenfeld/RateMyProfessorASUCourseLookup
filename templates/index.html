@@ -15,9 +15,11 @@
     function queryURL(){
       var inputText = $("#inputText").val();
       console.log(inputText);
+      //$(".submitButton").html("Loading...")
       $.getJSON('/backgroundRMPASU', {
         url: inputText,
       }, function(data) {
+        $(".profEntry").remove()
         data = data.replace(/'/g, '"')
         console.log(data)
         var json = $.parseJSON(data)
@@ -33,6 +35,7 @@
             </ul>
           </div>`;
           $("body").append(liString)
+        //  $(".submitButton").html("Submit")
         }
       });
 

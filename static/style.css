@@ -1,5 +1,7 @@
 body{
   text-align: center;
+  background-image: url("amountain.jpg");
+  background-position: top center;
 }
 h1{
   margin-top: 2%;
