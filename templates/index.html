@@ -4,15 +4,37 @@
     <title></title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <link rel="stylesheet" href="/static/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono&family=Roboto+Slab:wght@400;600&display=swap" rel="stylesheet">
   </head>
   <body>
-    <h1>Enter the URL for the ASU Course Catalog page you want queried</h1>
-    <input id="inputText" type="text" name="" value=""><br>
-    <button class="submitButton" type="button" name="button" onclick="queryURL()">Submit</button>
-    <span id="result"></span>
+    <div class="topWrapper">
+      <div class="topBanner">
+        <div class="verticalCenter">
+          <span style="margin-left: 20px; font-size: 40px; color: white;">RateMyProfessor ASU Course Lookup</span>
+
+        </div>
+
+      </div>
+      <div class="goldBuffer" style="bottom: 0; height: 10px; background-color: #FFC627; background-position: fixed;"></div>
+    </div>
+    <div class="page-content">
+      <div class="instructions tooltip">
+        <span>Paste the URL from an ASU Course Catalog page to see teacher reviews</span>
+      </div>
+      <input id="inputText" type="text" name="" placeholder="https://webapp4.asu.edu/catalog/classlist..."><br>
+      <div class="buttonContainer">
+        <button class="submitButton" type="button" name="button" onclick="queryURL()">Submit</button>
+      </div>
+      <div class="data-container">
+
+      </div>
+    </div>
   </body>
   <script type="text/javascript">
     function queryURL(){
+      $(".data-container").empty()
+      $(".data-container").html("Loading...")
       var inputText = $("#inputText").val();
       console.log(inputText);
       $.getJSON('/backgroundRMPASU', {
@@ -21,21 +43,23 @@
         data = data.replace(/'/g, '"')
         console.log(data)
         var json = $.parseJSON(data)
+          $(".data-container").empty()
         for(x in json){
           var liString = `
+
           <div class="profEntry">
-            <span class="profName">${json[x]["name"]}</span>
+            <span class="profName">${json[x]["name"]}<br></span>
             <ul>
               <li>Quality: ${json[x]["Overall Quality"]}</li>
               <li>Would Take Again: ${json[x]["Would Take Again"]}</li>
               <li>Difficulty: ${json[x]["Difficulty"]}</li>
-              <li><a href="${json[x]["RateMyProfessorURL"]}">Rate My Professor Page</a></li>
+              <li><a href="${json[x]["RateMyProfessorURL"]}" target="_blank">Rate My Professor Page</a></li>
             </ul>
           </div>`;
-          $("body").append(liString)
+          $(".data-container").append(liString)
+          $(".data-container").css("padding", "20px 0px")
         }
       });
-
     }
   </script>
 {% endblock %}
