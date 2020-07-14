@@ -33,17 +33,32 @@
   </body>
   <script type="text/javascript">
     function queryURL(){
-      $(".data-container").empty()
-      $(".data-container").html("Loading...")
       var inputText = $("#inputText").val();
       console.log(inputText);
+
+      $(".data-container").empty()
+      $.getJSON('/quickreturn', {
+        url: inputText,
+      }, function(data){
+        data = data.replace(/'/g, '"')
+        var json = $.parseJSON(data)
+        var infoSection = `
+          <div class="infoSection">
+            <span>Search Criteria: ${json['department']} ${json['courseNumber']}</span>
+          </div>
+        `
+        $(".data-container").append(infoSection)
+        $(".data-container").css("padding", "20px 0px")
+        $(".data-container").css("border", "2px solid black")
+      });
+
       $.getJSON('/backgroundRMPASU', {
         url: inputText,
       }, function(data) {
         data = data.replace(/'/g, '"')
         console.log(data)
         var json = $.parseJSON(data)
-          $(".data-container").empty()
+        $('.loading').fadeOut()
         for(x in json){
           var liString = `
 
@@ -56,10 +71,20 @@
               <li><a href="${json[x]["RateMyProfessorURL"]}" target="_blank">Rate My Professor Page</a></li>
             </ul>
           </div>`;
-          $(".data-container").append(liString)
-          $(".data-container").css("padding", "20px 0px")
+          $(liString).hide().appendTo(".data-container").fadeIn(1000);
         }
-      });
+      })
+      .fail(function() {
+        $('.data-container').empty()
+        var errorSection = `
+          <div class="infoSection">
+            <span>Could not find data for that link! Make sure it comes from the ASU Course Search Catalog and try not using advanced course search parameters.</span>
+          </div>
+        `
+        $(".data-container").append(errorSection)
+        $(".data-container").css("padding", "20px 0px")
+        $(".data-container").css("border", "2px solid black")
+      })
     }
   </script>
 {% endblock %}

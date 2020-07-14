@@ -12,6 +12,14 @@ app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'XYZ')
 def start():
     return render_template("index.html")
 
+@app.route('/quickreturn')
+def linkdata():
+    inputURL = request.args.get('url')
+    #https://webapp4.asu.edu/catalog/classlist?t=2207&s=CSE&n=110&hon=F&promod=F&e=open&page=1
+    returnInfo = {}
+    returnInfo['department'] = inputURL[(inputURL.find('&s=')+3):(inputURL.find('&s=')+6)]
+    returnInfo['courseNumber'] = inputURL[(inputURL.find('&n=')+3):(inputURL.find('&n=')+6)]
+    return jsonify(str(returnInfo))
 
 @app.route('/backgroundRMPASU')
 def queryRMP():

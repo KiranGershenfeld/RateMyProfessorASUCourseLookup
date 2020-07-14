@@ -74,6 +74,12 @@ input:focus{
   color: black;
 }
 
+.infoSection{
+  margin-left: 15px;
+  font-size: 25px;
+  font-family: 'Roboto Mono', monospace;
+  margin-bottom: 20px;
+}
 .profEntry{
   text-align: left;
   margin-left: 15px;
