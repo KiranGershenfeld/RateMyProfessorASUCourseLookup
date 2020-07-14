@@ -65,13 +65,18 @@ input:focus{
   margin-top: 20px;
   padding: 10px 20px;
   font-size: 25px;
-  font-weight: bold;
-  background: white;
+  background:  linear-gradient(rgba(0,0,0,.85), rgba(0,0,0,.85));
   border: none;
   outline: none;
   border-radius: 5px;
   cursor: pointer;
-  color: black;
+  color: white;
+  transition: 250ms;
+}
+.submitButton:hover{
+  background:  linear-gradient(rgba(0,0,0,1), rgba(0,0,0,1));
+  font-size: 27px;
+  color: white;
 }
 
 .infoSection{
