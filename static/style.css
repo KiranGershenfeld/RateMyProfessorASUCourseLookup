@@ -1,8 +1,8 @@
 body{
   text-align: center;
-  background-image: url("asubackground.png");
+  background-image: url("asubackground.jpg");
   background-size: cover;
-  background-position: bottom center;
+  background-position: top center;
   margin: 0;
 }
 .topWrapper{
