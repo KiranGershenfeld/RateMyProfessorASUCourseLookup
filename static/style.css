@@ -1,3 +1,4 @@
+
 body{
   text-align: center;
   background-image: url("asubackground.jpg");
@@ -5,10 +6,13 @@ body{
   background-position: top center;
   margin: 0;
 }
+.main{
+  min-height: 90vh;
+}
 .topWrapper{
   top: 0;
-  height: 10vh;
-  min-height: 85px;
+  height: 12vh;
+  min-height: 100px;
   position: fixed;
   width: 100%;
 }
@@ -26,13 +30,34 @@ body{
   -ms-transform: translateY(-50%);
   transform: translateY(-50%);
 }
-
+.floatRight{
+  float: right;
+  position: absolute;
+  right: 30px;
+  bottom: 18px;
+}
+.icon{
+  width: max-content;
+  float: right;
+}
+.iconButton{
+  right: 0;
+  height: 40px;
+  width: auto;
+  margin-bottom: 2px;
+}
+.affiliation{
+  float: right;
+  display: block;
+  color: white;
+  margin-top: 6px;
+}
 .page-content{
-  margin-top: 15vh;
+  margin-top: 19vh;
   padding-left: 20%;
   padding-right: 20%;
   text-align: left;
-  margin-bottom: 20px;
+  padding-bottom: 20px;
 }
 .instructions{
   text-align: left;
@@ -114,4 +139,16 @@ ul{
 .profName{
   font-family: 'Roboto Mono', monospace;
   font-size: 25px;
+}
+footer{
+  text-align: left;
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  background: linear-gradient(rgba(0,0,0,.8), rgba(0,0,0,.8));
+  font-size: 15px;
+  color: white;
+  padding: 10px 10px;
+  border-radius: 3px;
+  width: 20%;
 }

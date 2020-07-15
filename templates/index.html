@@ -3,20 +3,34 @@
     <meta charset="utf-8">
     <title></title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="/static/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@600&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono&family=Roboto+Slab:wght@400;600&display=swap" rel="stylesheet">
   </head>
   <body>
     <div class="topWrapper">
-      <div class="topBanner">
-        <div class="verticalCenter">
+    <div class="topBanner">
+      <div class="verticalCenter">
+        <div style="float: left;">
           <span style="margin-left: 20px; font-size: 40px; color: white;">RateMyProfessor ASU Course Lookup</span>
-
+        </div>
+      </div>
+      <div class="floatRight">
+        <div style="margin-bottom: 10px;">
+          <a class="linkPortfolio" href="https://kirangershenfeld.dev/index.html#DevPortfolioAnchor" target='_blank'><i class="fa fa-th" aria-hidden="true" style="font-size: 45px; color: white; margin-left: 20px; float:right;" ></i></a>
+          <div class="icon">
+            <a href="https://github.com/KiranGershenfeld/RateMyProfessorASUCourseLookup" target='_blank'><img src="/static/git.png" class="iconButton"></a>
+          </div>
+        </div>
+        <div class="affiliation">
+          This website is not affiliated with RateMyProfessor or ASU
         </div>
 
       </div>
-      <div class="goldBuffer" style="bottom: 0; height: 10px; background-color: #FFC627; background-position: fixed;"></div>
+
+    </div>
+    <div class="goldBuffer" style="bottom: 0; height: 10px; background-color: #FFC627; background-position: fixed;"></div>
     </div>
     <div class="page-content">
       <div class="instructions tooltip">
@@ -27,7 +41,6 @@
         <button class="submitButton" type="button" name="button" onclick="queryURL()">Submit</button>
       </div>
       <div class="data-container">
-
       </div>
     </div>
   </body>
