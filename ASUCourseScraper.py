@@ -17,10 +17,15 @@ def CreateTeacherList(inputURL):
     for tags in soup.findAll("a", {"class":"nametip"}):
         #teacherName = tags.get('title')
         #teacherName = teacherName[11:]
-        teacherName = tags.text.strip()
+        #teacherName = tags.text.strip()
+        teacherName = tags.get('title', 'NoTitleFound')
+        teacherName = teacherName.split("|")[1]
+        teacherName = teacherName.replace(" ", "%20")
+        print(teacherName)
         if teacherName not in ProfessorsTeachingThisClass and teacherName != "Staff":
             ProfessorsTeachingThisClass.append(teacherName)
             numASUProfessors = len(ProfessorsTeachingThisClass)
+    #print(ProfessorsTeachingThisClass)
     return ProfessorsTeachingThisClass
 
 #Use this function to get RMP teacher ids for a given professor name. This is necessary to find their actual RMP page.
@@ -33,7 +38,52 @@ def GetProfessorData(professor):
     JSONdata = json.loads(trimmedJSON)
     #This JSON data contains the number of teachers for that name and their IDs. these will be used in GetRMPData()
     response = JSONdata["response"]
+
     return response
+
+def QueryRMP(profData):
+    #--THIS IS WHERE THE ACTUAL DATA IS FOUND--
+    condensedProfData = {}
+    #Gathering name and id of professor
+    profID = profData["pk_id"]
+    profName = profData["teacherfirstname_t"] + " " + profData["teacherlastname_t"]
+
+    #Ask Ratemyprofessor for data for this teacher using their ID
+    actualRMPURL = requests.get("https://www.ratemyprofessors.com/ShowRatings.jsp?tid=" + str(profID) + "&showMyProfs=true")
+    RMPSoup = BeautifulSoup(actualRMPURL.content.decode('utf-8', 'ignore'), "lxml")
+
+    #Add name to dictionary
+    condensedProfData["name"] = profName
+
+    #Add URL to dictionary
+    RMPURL = "https://www.ratemyprofessors.com/ShowRatings.jsp?tid=" + str(profID) + "&showMyProfs=true"
+    condensedProfData["RateMyProfessorURL"] = RMPURL
+
+    #Add Quality to dictionary
+    overallQuality = RMPSoup.find("div", {"class":"RatingValue__Numerator-qw8sqy-2 gxuTRq"}).text.strip()
+    condensedProfData["Overall Quality"] = overallQuality
+
+    #Add Would Take Again and Difficulty to dictionary
+    description = ["Would Take Again", "Difficulty"]
+    descriptionNumber = 0
+    for grade in RMPSoup.findAll("div", {"class":"FeedbackItem__FeedbackNumber-uof32n-1 bGrrmf"}):
+        condensedProfData[description[descriptionNumber]] = grade.text.strip()
+        descriptionNumber+=1
+
+    #Add number of reviews to dictionary
+    reviewDiv = RMPSoup.find("div", {"class":"RatingValue__NumRatings-qw8sqy-0 jvzMox"})
+    numberOfReviews = reviewDiv.find("a").text.strip()
+    print(numberOfReviews)
+    numberOfReviews = numberOfReviews.replace('\xa0', ' ') #Replaces BS4 space with an actual space so that the JSON can be parsed properly
+    condensedProfData["numberOfReviews"] = numberOfReviews
+
+    #Add school teaching at to dictionary
+    schoolDiv = RMPSoup.find("div", {"class":"NameTitle__Title-dowf0z-1 wVnqu"})
+    deptAndSchool = schoolDiv.find("a").text.strip()
+    condensedProfData["departmentAndSchool"] = deptAndSchool
+
+    #--END DATA GATHERING--
+    return condensedProfData
 
 #Iterates through the list of professors gathered from the ASU course catalog
 def GetRMPData(inputURL):
@@ -46,56 +96,25 @@ def GetRMPData(inputURL):
         if response["numFound"] > 0:
             profData = response["docs"][0]
             if profData["total_number_of_ratings_i"] > 0:
-                #--THIS IS WHERE THE ACTUAL DATA IS FOUND--
-                condensedProfData = {}
-                #Gathering name and id of professor
-                profID = profData["pk_id"]
-                profName = profData["teacherfirstname_t"] + " " + profData["teacherlastname_t"]
-
-                #Ask Ratemyprofessor for data for this teacher using their ID
-                actualRMPURL = requests.get("https://www.ratemyprofessors.com/ShowRatings.jsp?tid=" + str(profID) + "&showMyProfs=true")
-                RMPSoup = BeautifulSoup(actualRMPURL.content.decode('utf-8', 'ignore'), "lxml")
-
-                #Add name to dictionary
-                condensedProfData["name"] = profName
-
-                #Add URL to dictionary
-                RMPURL = "https://www.ratemyprofessors.com/ShowRatings.jsp?tid=" + str(profID) + "&showMyProfs=true"
-                condensedProfData["RateMyProfessorURL"] = RMPURL
-
-                #Add Quality to dictionary
-                overallQuality = RMPSoup.find("div", {"class":"RatingValue__Numerator-qw8sqy-2 gxuTRq"}).text.strip()
-                condensedProfData["Overall Quality"] = overallQuality
-
-                #Add Would Take Again and Difficulty to dictionary
-                description = ["Would Take Again", "Difficulty"]
-                descriptionNumber = 0
-                for grade in RMPSoup.findAll("div", {"class":"FeedbackItem__FeedbackNumber-uof32n-1 bGrrmf"}):
-                    condensedProfData[description[descriptionNumber]] = grade.text.strip()
-                    descriptionNumber+=1
-
-                #Add number of reviews to dictionary
-                reviewDiv = RMPSoup.find("div", {"class":"RatingValue__NumRatings-qw8sqy-0 jvzMox"})
-                numberOfReviews = reviewDiv.find("a").text.strip()
-                print(numberOfReviews)
-                numberOfReviews = numberOfReviews.replace('\xa0', ' ') #Replaces BS4 space with an actual space so that the JSON can be parsed properly
-                condensedProfData["numberOfReviews"] = numberOfReviews
-
-                #Add school teaching at to dictionary
-                schoolDiv = RMPSoup.find("div", {"class":"NameTitle__Title-dowf0z-1 wVnqu"})
-                deptAndSchool = schoolDiv.find("a").text.strip()
-                condensedProfData["departmentAndSchool"] = deptAndSchool
-
-                #--END DATA GATHERING--
-                RMPData[profName] = condensedProfData
-
+                RMPData[profData["teacherfirstname_t"] + " " + profData["teacherlastname_t"]] = QueryRMP(profData)
             else:
                 TeachersWithNoReviews.append(professor)
         else:
-            TeachersWithoutEntries.append(professor)
+            secondName = professor.split('%20')[1]
+            secondResponse = GetProfessorData(secondName)
+            if(secondResponse["numFound"] > 0):
+                secondProfData = secondResponse["docs"][0]
+                tempData = QueryRMP(secondProfData)
+                url = tempData["RateMyProfessorURL"]
+                tempDict = {professor: url}
+                print(tempDict)
+                TeachersWithoutEntries.append(tempDict)
+            else:
+                tempDict = {professor: "Couldnt be found"}
+                TeachersWithoutEntries.append(tempDict)
 
-    profData["NoReviews"] = TeachersWithNoReviews
-    profData["NoEntries"] = TeachersWithoutEntries
+    RMPData["NoReviews"] = TeachersWithNoReviews
+    RMPData["NoEntries"] = TeachersWithoutEntries
     return RMPData
 
 #Run Project

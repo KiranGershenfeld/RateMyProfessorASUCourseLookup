@@ -81,7 +81,7 @@
         $('.loading').remove()
 
         for(x in json){
-
+          console.log(json[x])
           //Not verified ASU warning
           var warningText = ``
           if(json[x]["departmentAndSchool"] != "Arizona State University") warningText = `<span style="color:red">We couldn't verify this professor works at ASU. Please check RMP link<br></span>`
