@@ -79,35 +79,84 @@
         console.log(data)
         var json = $.parseJSON(data)
         $('.loading').remove()
+        var profDict = json["Professors"]
+        var noReviews = json["NoReviews"]
+        var noEntries = json["NoEntries"]
+        //Iterating through FOUND professors
+        for(x in profDict){
+          console.log(profDict[x])
 
-        for(x in json){
-          console.log(json[x])
-          //Not verified ASU warning
+          //Not verified ASU Warning
           var warningText = ``
-          if(json[x]["departmentAndSchool"] != "Arizona State University") warningText = `<span style="color:red">We couldn't verify this professor works at ASU. Please check RMP link<br></span>`
+          if(profDict[x]["departmentAndSchool"] != "Arizona State University") warningText = `<span style="color:red">We couldn't verify this professor works at ASU. Please check RMP link<br></span>`
 
+          //If they have reviews display all data
+          if(parseFloat(profDict[x]["numberOfReviews"]) > 0){
+            var liString = `
+            <div class="profEntry">
+              <div class="profHeader">
+                <span>${warningText}</span>
+                <span>${profDict[x]["name"]}<br></span>
+                <span style="font-size: 20px;"> from ${profDict[x]["numberOfReviews"]}</span>
+              </div>
+              <ul>
+                <li>Quality: ${profDict[x]["Overall Quality"]}</li>
+                <li>Would Take Again: ${profDict[x]["Would Take Again"]}</li>
+                <li>Difficulty: ${profDict[x]["Difficulty"]}</li>
+                <li><a href="${profDict[x]["RateMyProfessorURL"]}" target="_blank">Rate My Professor Page</a></li>
+              </ul>
+            </div>`;
 
-          var liString = `
+            $(liString).hide().appendTo(".data-container").fadeIn(1000);
+          } //If they dont have reviews, just show the URL
+          else{
+            var liString = `
+            <div class="profEntry">
+              <div class="profHeader">
+                <span>${warningText}</span>
+                <span>${profDict[x]["name"]}<br></span>
+              </div>
+              <ul>
+                <li>No Reviews Found</li>
+                <li><a href="${profDict[x]["RateMyProfessorURL"]}" target="_blank">Rate My Professor Page</a></li>
+              </ul>
+            </div>`;
 
-          <div class="profEntry">
-            <div class="profHeader">
-              <span>${warningText}</span>
-              <span>${json[x]["name"]}<br></span>
-              <span style="font-size: 20px;"> from ${json[x]["numberOfReviews"]}</span>
-            </div>
-            <ul>
-              <li>Quality: ${json[x]["Overall Quality"]}</li>
-              <li>Would Take Again: ${json[x]["Would Take Again"]}</li>
-              <li>Difficulty: ${json[x]["Difficulty"]}</li>
-              <li><a href="${json[x]["RateMyProfessorURL"]}" target="_blank">Rate My Professor Page</a></li>
-            </ul>
-          </div>`;
-
-          $(liString).hide().appendTo(".data-container").fadeIn(1000);
-          $('.submitButton').prop('disabled', false);
+            $(liString).hide().appendTo(".data-container").fadeIn(1000);
+          }
         }
-
-
+        //For the teachers that couldnt be found, display a potential url if one exists
+        for (x in noEntries){
+          if(noEntries[x]['url'] != "none")
+          {
+            var liString = `
+            <div class="profEntry">
+              <div class="profHeader">
+                <span>${warningText}</span>
+                <span>${noEntries[x]["name"]}<br></span>
+              </div>
+              <ul>
+                <li>${noEntries[x]["status"]}</li>
+                <li><a href=${noEntries[x]["url"]} target="_blank">Potentially This Page</a></li>
+              </ul>
+            </div>`;
+            $(liString).hide().appendTo(".data-container").fadeIn(1000);
+          }
+          else{
+            var liString = `
+            <div class="profEntry">
+              <div class="profHeader">
+                <span>${warningText}</span>
+                <span>${noEntries[x]["name"]}<br></span>
+              </div>
+              <ul>
+                <li>${noEntries[x]["status"]}</li>
+              </ul>
+            </div>`;
+            $(liString).hide().appendTo(".data-container").fadeIn(1000);
+          }
+        }
+        $('.submitButton').prop('disabled', false);
       })
       .fail(function() {
         $('.data-container').empty()

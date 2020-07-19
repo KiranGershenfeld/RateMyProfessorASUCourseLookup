@@ -21,7 +21,6 @@ def CreateTeacherList(inputURL):
         teacherName = tags.get('title', 'NoTitleFound')
         teacherName = teacherName.split("|")[1]
         teacherName = teacherName.replace(" ", "%20")
-        print(teacherName)
         if teacherName not in ProfessorsTeachingThisClass and teacherName != "Staff":
             ProfessorsTeachingThisClass.append(teacherName)
             numASUProfessors = len(ProfessorsTeachingThisClass)
@@ -89,32 +88,31 @@ def QueryRMP(profData):
 def GetRMPData(inputURL):
     ProfessorsTeachingThisClass = CreateTeacherList(inputURL)
     RMPData = {} #This will be the JSON returned to the webpage
+    RMPData["Professors"] = {}
+    RMPData["NoReviews"] = {}
+    RMPData["NoEntries"] = {}
 
     for professor in ProfessorsTeachingThisClass:
         response = GetProfessorData(professor)
-        #Conditions for whether professor was found and has reviews
+        #Conditions for whether professor was found
         if response["numFound"] > 0:
             profData = response["docs"][0]
-            if profData["total_number_of_ratings_i"] > 0:
-                RMPData[profData["teacherfirstname_t"] + " " + profData["teacherlastname_t"]] = QueryRMP(profData)
-            else:
-                TeachersWithNoReviews.append(professor)
+            RMPData["Professors"][profData["teacherfirstname_t"] + " " + profData["teacherlastname_t"]] = QueryRMP(profData)
         else:
+            #IF they werent found, query just the last name to find a potetial url
             secondName = professor.split('%20')[1]
             secondResponse = GetProfessorData(secondName)
             if(secondResponse["numFound"] > 0):
                 secondProfData = secondResponse["docs"][0]
-                tempData = QueryRMP(secondProfData)
-                url = tempData["RateMyProfessorURL"]
-                tempDict = {professor: url}
-                print(tempDict)
-                TeachersWithoutEntries.append(tempDict)
+                url = QueryRMP(secondProfData)["RateMyProfessorURL"]
+                RMPData["NoEntries"][professor] = {"name": professor.replace("%20", " "), "status": "Couldnt Be Found ", "url": url}
             else:
+                #if no potential url was found, just send back the name
                 tempDict = {professor: "Couldnt be found"}
-                TeachersWithoutEntries.append(tempDict)
+                RMPData["NoEntries"][professor] = {"name": professor.replace("%20", " "), "status": "Couldnt be Found", "url": "none"}
 
-    RMPData["NoReviews"] = TeachersWithNoReviews
-    RMPData["NoEntries"] = TeachersWithoutEntries
+
+    print(json.dumps(RMPData, indent=2))
     return RMPData
 
 #Run Project
