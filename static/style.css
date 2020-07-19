@@ -135,8 +135,9 @@ ul{
   padding: 0px 0px;
   text-align: left;
   color: black;
+  line-height: 1.6;
 }
-.profName{
+.profHeader{
   font-family: 'Roboto Mono', monospace;
   font-size: 25px;
 }

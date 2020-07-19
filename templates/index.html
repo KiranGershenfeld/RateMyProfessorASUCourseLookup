@@ -46,6 +46,7 @@
   </body>
   <script type="text/javascript">
     function queryURL(){
+       $('.submitButton').prop('disabled', true);
       var inputText = $("#inputText").val();
       console.log(inputText);
 
@@ -78,11 +79,22 @@
         console.log(data)
         var json = $.parseJSON(data)
         $('.loading').remove()
+
         for(x in json){
+
+          //Not verified ASU warning
+          var warningText = ``
+          if(json[x]["departmentAndSchool"] != "Arizona State University") warningText = `<span style="color:red">We couldn't verify this professor works at ASU. Please check RMP link<br></span>`
+
+
           var liString = `
 
           <div class="profEntry">
-            <span class="profName">${json[x]["name"]}<br></span>
+            <div class="profHeader">
+              <span>${warningText}</span>
+              <span>${json[x]["name"]}<br></span>
+              <span style="font-size: 20px;"> from ${json[x]["numberOfReviews"]}</span>
+            </div>
             <ul>
               <li>Quality: ${json[x]["Overall Quality"]}</li>
               <li>Would Take Again: ${json[x]["Would Take Again"]}</li>
@@ -90,8 +102,12 @@
               <li><a href="${json[x]["RateMyProfessorURL"]}" target="_blank">Rate My Professor Page</a></li>
             </ul>
           </div>`;
+
           $(liString).hide().appendTo(".data-container").fadeIn(1000);
+          $('.submitButton').prop('disabled', false);
         }
+
+
       })
       .fail(function() {
         $('.data-container').empty()
@@ -103,6 +119,7 @@
         $(".data-container").append(errorSection)
         $(".data-container").css("padding", "20px 0px")
         $(".data-container").css("border", "2px solid black")
+        $('.submitButton').prop('disabled', false);
       })
     }
   </script>
