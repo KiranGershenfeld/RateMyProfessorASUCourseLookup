@@ -51,6 +51,7 @@ body{
   display: block;
   color: white;
   margin-top: 6px;
+  font-size: 1vw;
 }
 .page-content{
   margin-top: 19vh;
