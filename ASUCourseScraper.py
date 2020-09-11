@@ -66,7 +66,7 @@ def GetReviewsForProfessor(profData):
     condensedProfData["numberOfReviews"] = numberOfReviews
 
     #Add school teaching at to dictionary
-    schoolDiv = RMPSoup.find("div", {"class":"NameTitle__Title-dowf0z-1 wVnqu"})
+    schoolDiv = RMPSoup.find("div", {"class":"NameTitle__Title-dowf0z-1"})
     deptAndSchool = schoolDiv.find("a").text.strip()
     condensedProfData["departmentAndSchool"] = deptAndSchool
 
