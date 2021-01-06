@@ -49,18 +49,18 @@ def GetReviewsForProfessor(profData):
     condensedProfData["RateMyProfessorURL"] = RMPURL
 
     #Add Quality to dictionary
-    overallQuality = RMPSoup.find("div", {"class":"RatingValue__Numerator-qw8sqy-2 gxuTRq"}).text.strip()
+    overallQuality = RMPSoup.find("div", {"class":"RatingValue__Numerator-qw8sqy-2 liyUjw"}).text.strip()
     condensedProfData["Overall Quality"] = overallQuality
 
     #Add Would Take Again and Difficulty to dictionary
     description = ["Would Take Again", "Difficulty"]
     descriptionNumber = 0
-    for grade in RMPSoup.findAll("div", {"class":"FeedbackItem__FeedbackNumber-uof32n-1 bGrrmf"}):
+    for grade in RMPSoup.findAll("div", {"class":"FeedbackItem__FeedbackNumber-uof32n-1"}):
         condensedProfData[description[descriptionNumber]] = grade.text.strip()
         descriptionNumber+=1
 
     #Add number of reviews to dictionary
-    reviewDiv = RMPSoup.find("div", {"class":"RatingValue__NumRatings-qw8sqy-0 jvzMox"})
+    reviewDiv = RMPSoup.find("div", {"class":"RatingValue__NumRatings-qw8sqy-0"})
     numberOfReviews = reviewDiv.find("a").text.strip()
     numberOfReviews = numberOfReviews.replace('\xa0', ' ') #Replaces BS4 space with an actual space so that the JSON can be parsed properly
     condensedProfData["numberOfReviews"] = numberOfReviews
